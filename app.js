@@ -8,6 +8,10 @@ map.addLayer(drawnItems);
 var drawControl = new L.Control.Draw({
   draw: {
     position: 'topleft',
+    polyline: null,
+    circle: null,
+    rectangle: null,
+    marker: null,
     polygon: {
       title: 'Draw a sexy polygon!',
       allowIntersection: false,
@@ -17,11 +21,6 @@ var drawControl = new L.Control.Draw({
       },
       shapeOptions: {
         color: '#bada55'
-      }
-    },
-    circle: {
-      shapeOptions: {
-        color: '#662d91'
       }
     }
   },
