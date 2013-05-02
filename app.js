@@ -33,12 +33,11 @@ var polygon = new L.Polygon([
   [62.03698663440364, 7.31689453125],
   [62.03698663440364, 7.00927734375]
 ]);
-
-polygon.editing.enable();
-map.addLayer(polygon);
+polygon.bindPopup('Navn: <input type="text" value="Mitt område"> <button>Lagre</button>');
 
 var drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
+drawnItems.addLayer(polygon);
 
 var drawControl = new L.Control.Draw({
   draw: {
@@ -67,15 +66,15 @@ var drawControl = new L.Control.Draw({
 map.addControl(drawControl);
 
 map.on('draw:created', function (e) {
-  var type = e.layerType,
-    layer = e.layer;
-
+  /*
+   * layer = e.layer
+   * type = e.layerType
+   */
   console.log(e);
-  if (type === 'polygon') {
-    layer.bindPopup('This land is my land!');
-  }
-
-  drawnItems.addLayer(layer);
+  e.layer.bindPopup('Navn: <input type="text" value="Mitt område"> <button>Lagre</button>');
+  drawnItems.addLayer(e.layer);
+  // open popup can happen after feature has been added to map
+  e.layer.openPopup(); // @todo find middle point
 });
 
 map.on('draw:edited', function (e) {
