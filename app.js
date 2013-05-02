@@ -55,8 +55,8 @@ var drawControl = new L.Control.Draw({
         timeout: 1000
       },
       shapeOptions: {
-        color: '#c95a5d',
-        opacity: 0.8
+        color: '#0033ff',
+        opacity: 0.5
       }
     }
   },
