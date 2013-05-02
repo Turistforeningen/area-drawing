@@ -38,6 +38,7 @@ polygon.bindPopup('Navn: <input type="text" value="Mitt område"> <button>Lagre<
 var drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 drawnItems.addLayer(polygon);
+polygon.openPopup();
 
 var drawControl = new L.Control.Draw({
   draw: {
