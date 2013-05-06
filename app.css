@@ -13,15 +13,15 @@ div.leaflet-draw-toolbar a {
 }
 
 a.leaflet-draw-draw-polygon:before {
-  content: 'Nytt omrÃ¥de';
+  content: 'Nytt område';
 }
 
 a.leaflet-draw-edit-edit:before {
-  content: 'Endre omrÃ¥de';
+  content: 'Endre område';
 }
 
 a.leaflet-draw-edit-remove:before {
-  content: 'Slett omrÃ¥de';
+  content: 'Slett område';
 }
 
 ul.leaflet-draw-actions {
