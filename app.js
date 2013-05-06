@@ -11,17 +11,13 @@
     
     map = new L.Map('map', {layers: [topo], center: new L.LatLng(61.5, 9), zoom: 7 });
     
-    L.marker([62.4717237147587, 6.2841796875]).addTo(map);
-    
     drawnItems = L.geoJson(null, {
       onEachFeature: function(feature, layer) {
-        console.log(feature, layer);
         return true;
       }
     }).addTo(map);
     
-    $.getJSON('http://www2.turistforeningen.no/admin/ajax/area.php', function(data) {
-      console.log(data.features);
+    $.getJSON('http://www2.turistforeningen.no/admin/ajax/area.php?callback=?', function(data) {
       return drawnItems.addData(data);
     });
         
@@ -52,24 +48,50 @@
     map.addControl(drawControl);
     
     map.on('draw:created', function (e) {
-      /*
-       * layer = e.layer
-       * type = e.layerType
-       */
-      console.log(e);
-      // e.layer.bindPopup('Navn: <input type="text" value="Mitt område"> <button>Lagre</button>');
-      drawnItems.addLayer(e.layer);
-      // open popup can happen after feature has been added to map
-      // e.layer.openPopup(); // @todo find middle point
+      var geom, name;
+      
+      name = 'Område uten navn';
+      geom = latlngsToString(e.layer._latlngs);
+      
+      $.post('http://www2.turistforeningen.no/admin/ajax/area.php?method=post&callback=?', {'name': name, 'geom': geom}, function(data) {
+        return drawnItems.addData(data);
+      },'jsonp');
     });
     
     map.on('draw:edited', function (e) {
-      var layers = e.layers;
-      var countOfEditedLayers = 0;
-      layers.eachLayer(function(layer) {
-        countOfEditedLayers++;
+      e.layers.eachLayer(function (layer) {
+        var id, name, geom;
+        
+        console.log(layer);
+        
+        id = layer.feature.properties.id;
+        name = layer.feature.properties.name;
+        geom = latlngsToString(layer._latlngs);
+        
+        $.post('http://www2.turistforeningen.no/admin/ajax/area.php?method=post&id='+id+'&callback=?', {'name': name, 'geom': geom}, function(data) {
+          console.log(data);
+          // return drawnItems.addData(data);
+        },'jsonp');
+        
+        console.log(layer.feature);
       });
-      console.log("Edited " + countOfEditedLayers + " layers");
     });
+    
+    function coordsToString(coords) {
+      var str = '';
+      for (var i = 0; i < coords.length; i++) {
+        str += (i > 0 ? ',' : '') + coords[i][0] + ' ' + coords[i][1];
+      }
+      return str + ',' + coords[0][0] + ' ' + coords[0][1];
+    }
+    
+    function latlngsToString(latlngs) {
+      var str = '';
+      for (var i = 0; i < latlngs.length; i++) {
+        str += (i > 0 ? ',' : '') + latlngs[i].lng + ' ' + latlngs[i].lat;
+      }
+      return str + ',' + latlngs[0].lng + ' ' + latlngs[0].lat;
+    }
+    
   });
 }).call(this);
