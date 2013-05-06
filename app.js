@@ -53,16 +53,19 @@
           allowIntersection: false,
           drawError: {
             color: '#b00b00',
+            opacity: 0.8,
             timeout: 1000
           },
-          shapeOptions: {
-            color: '#0033ff',
-            opacity: 0.5
-          }
         }
       },
       edit: {
-        featureGroup: myPolygons
+        featureGroup: myPolygons,
+        edit: {
+          selectedPathOptions: {
+            color: 'red',
+            opacity: 0.8
+          }
+        }
       }
     });
     map.addControl(drawControl);
