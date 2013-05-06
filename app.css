@@ -27,3 +27,7 @@ a.leaflet-draw-edit-remove:before {
 ul.leaflet-draw-actions {
   left: 100px;
 }
+
+div.leaflet-draw-tooltip {
+  display: none;
+}
