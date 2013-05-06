@@ -29,7 +29,7 @@
         rectangle : null,
         marker    : null,
         polygon: {
-          title: 'Marker område!',
+          title: 'Nytt område',
           allowIntersection: false,
           drawError: {
             color: '#b00b00',
