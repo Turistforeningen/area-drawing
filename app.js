@@ -2,23 +2,43 @@
 (function() {
   "use strict";
   jQuery(function($) {
-    var topo, map, drawnItems, drawControl;
+    var key, areaUrl, topo, map, myPolygons, otherPolygons, drawControl;
     
+    key = window.location.hash.substr(1);
+    areaUrl = 'http://www2.turistforeningen.no/admin/ajax/area.php';
     topo = L.tileLayer('http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo2&zoom={z}&x={x}&y={y}', {
       maxZoom: 16,
       attribution: '<a href="http://www.statkart.no/">Statens kartverk</a>'
     });
-    
     map = new L.Map('map', {layers: [topo], center: new L.LatLng(61.5, 9), zoom: 7 });
     
-    drawnItems = L.geoJson(null, {
+    otherPolygons = L.geoJson(null, {
+      style: function (feature) {
+    		return {color: 'blue'};
+    	},
+      onEachFeature: function(feature, layer) {
+        console.log(feature, layer);
+        return true;
+      }
+    }).addTo(map);
+    
+    myPolygons = L.geoJson(null, {
+      style: function (feature) {
+    		return {color: 'green'};
+    	},
       onEachFeature: function(feature, layer) {
         return true;
       }
     }).addTo(map);
     
-    $.getJSON('http://www2.turistforeningen.no/admin/ajax/area.php?callback=?', function(data) {
-      return drawnItems.addData(data);
+    $.getJSON(areaUrl + '?key=' + key + '&callback=?', function(data) {
+      for (var i = 0; i < data.features.length; i++) {
+        if (data.features[i].properties.edit) {
+          myPolygons.addData(data.features[i]);
+        } else {
+          otherPolygons.addData(data.features[i]);
+        }
+      }
     });
         
     drawControl = new L.Control.Draw({
@@ -42,7 +62,7 @@
         }
       },
       edit: {
-        featureGroup: drawnItems
+        featureGroup: myPolygons
       }
     });
     map.addControl(drawControl);
@@ -53,8 +73,8 @@
       name = 'Område uten navn';
       geom = latlngsToString(e.layer._latlngs);
       
-      $.post('http://www2.turistforeningen.no/admin/ajax/area.php?method=post&callback=?', {'name': name, 'geom': geom}, function(data) {
-        return drawnItems.addData(data);
+      $.post(areaUrl + '?key=' + key + '&method=post&callback=?', {'name': name, 'geom': geom}, function(data) {
+        return myPolygons.addData(data);
       },'jsonp');
     });
     
@@ -68,9 +88,9 @@
         name = layer.feature.properties.name;
         geom = latlngsToString(layer._latlngs);
         
-        $.post('http://www2.turistforeningen.no/admin/ajax/area.php?method=post&id='+id+'&callback=?', {'name': name, 'geom': geom}, function(data) {
+        $.post(areaUrl + '?key=' + key + '&method=post&id='+id+'&callback=?', {'name': name, 'geom': geom}, function(data) {
           console.log(data);
-          // return drawnItems.addData(data);
+          // return myPolygons.addData(data);
         },'jsonp');
         
         console.log(layer.feature);
