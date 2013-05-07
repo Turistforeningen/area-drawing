@@ -1,15 +1,11 @@
 var myPolygons, key, areaUrl;
 
 function featureSaveName(id, name) {
-  console.log('featureSaveName', id, name);
   $.each(myPolygons._layers, function(lid, layer) {
     if (myPolygons._layers[lid].feature.properties.id == id) {
       myPolygons._layers[lid].feature.properties.name = name;
       myPolygons._layers[lid].bindPopup('Navn: <input name="'+id+'" type="text" value="'+name+'" onchange="featureSaveName(this.name, this.value)"><button>Lagre</button>');
       myPolygons._layers[lid].closePopup();
-      
-      console.log('posting');
-      
       var data = {'name': name, 'geom': latlngsToString(myPolygons._layers[lid]._latlngs)};
       $.post(areaUrl + '?key=' + key + '&method=post&id='+id+'&callback=?', data, function(data) {
         // return myPolygons.addData(data);
@@ -59,8 +55,6 @@ function latlngsToString(latlngs) {
       onEachFeature: function(feature, layer) {
         feature.properties.name = $("<div/>").html(feature.properties.name).text();
         layer.bindPopup('Navn: <input name="'+feature.properties.id+'" type="text" value="'+feature.properties.name+'" onchange="featureSaveName(this.name, this.value)"><button>Lagre</button>');
-        console.log(layer);
-        console.log(feature.properties.name);
         return true;
       }
     }).addTo(map);
