@@ -109,6 +109,18 @@ function latlngsToString(latlngs) {
       },'jsonp');
     });
     
+    map.on('draw:deleted', function (e) {
+      e.layers.eachLayer(function (layer) {
+        var id;
+        
+        id = layer.feature.properties.id;
+        
+        $.get(areaUrl + '?key=' + key + '&method=delete&id='+id+'&callback=?', function(data) {
+          console.log(data);
+        },'jsonp');
+      });
+    });
+    
     map.on('draw:edited', function (e) {
       e.layers.eachLayer(function (layer) {
         var id, name, geom;
