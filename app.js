@@ -116,7 +116,7 @@ function latlngsToString(latlngs) {
         id = layer.feature.properties.id;
         
         $.get(areaUrl + '?key=' + key + '&method=delete&id='+id+'&callback=?', function(data) {
-          console.log(data);
+          // console.log(data);
         },'jsonp');
       });
     });
