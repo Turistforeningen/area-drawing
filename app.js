@@ -7,7 +7,7 @@ function featureSaveName(id, name) {
       myPolygons._layers[lid].bindPopup('Navn: <input name="'+id+'" type="text" value="'+name+'" onchange="featureSaveName(this.name, this.value)"><button>Lagre</button>');
       myPolygons._layers[lid].closePopup();
       var data = {'name': name, 'geom': latlngsToString(myPolygons._layers[lid]._latlngs)};
-      $.post(areaUrl + '?key=' + key + '&method=post&id='+id+'&callback=?', data, function(data) {
+      $.post(areaUrl + '&method=post&id='+id+'&callback=?', data, function(data) {
         // return myPolygons.addData(data);
       },'jsonp');
     }
@@ -30,7 +30,7 @@ function latlngsToString(latlngs) {
     var topo, map, otherPolygons, drawControl;
     
     key = window.location.hash.substr(1);
-    areaUrl = 'http://www2.turistforeningen.no/admin/ajax/area.php';
+    areaUrl = 'http://www2.turistforeningen.no/admin/ajax/area.php' + '?key=' + key;
     topo = L.tileLayer('http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo2&zoom={z}&x={x}&y={y}', {
       maxZoom: 16,
       attribution: '<a href="http://www.statkart.no/">Statens kartverk</a>'
@@ -59,7 +59,7 @@ function latlngsToString(latlngs) {
       }
     }).addTo(map);
     
-    $.getJSON(areaUrl + '?key=' + key + '&callback=?', function(data) {
+    $.getJSON(areaUrl + '&callback=?', function(data) {
       for (var i = 0; i < data.features.length; i++) {
         if (data.features[i].properties.edit) {
           myPolygons.addData(data.features[i]);
@@ -99,14 +99,16 @@ function latlngsToString(latlngs) {
     map.addControl(drawControl);
     
     map.on('draw:created', function (e) {
-      var geom, name;
+      var data;
       
-      name = 'Uten navn';
-      geom = latlngsToString(e.layer._latlngs);
+      data = {
+        'name': 'Uten navn',
+        'geom': latlngsToString(e.layer._latlngs)
+      };
       
-      $.post(areaUrl + '?key=' + key + '&method=post&callback=?', {'name': name, 'geom': geom}, function(data) {
+      $.post(areaUrl + '&method=post', data, function(data) {
         return myPolygons.addData(data);
-      },'jsonp');
+      });
     });
     
     map.on('draw:deleted', function (e) {
@@ -115,23 +117,25 @@ function latlngsToString(latlngs) {
         
         id = layer.feature.properties.id;
         
-        $.get(areaUrl + '?key=' + key + '&method=delete&id='+id+'&callback=?', function(data) {
+        $.get(areaUrl + '&method=delete&id='+id+'&callback=?', function(data) {
           // console.log(data);
-        },'jsonp');
+        }, 'jsonp');
       });
     });
     
     map.on('draw:edited', function (e) {
       e.layers.eachLayer(function (layer) {
-        var id, name, geom;
+        var id, data;
         
         id = layer.feature.properties.id;
-        name = layer.feature.properties.name;
-        geom = latlngsToString(layer._latlngs);
+        data = {
+          'name': layer.feature.properties.name,
+          'geom': latlngsToString(layer._latlngs)
+        };
         
-        $.post(areaUrl + '?key=' + key + '&method=post&id='+id+'&callback=?', {'name': name, 'geom': geom}, function(data) {
-          // return myPolygons.addData(data);
-        },'jsonp');
+        $.post(areaUrl + '&method=post&id=' + id, data, function(data) {
+          // console.log(data);
+        });
       });
     });    
   });
